@@ -1,9 +1,9 @@
-Package: p1cTools 
+Package: vedaAppliance 
 Version: 0.1 
 Section: web 
 Priority: optional
-Maintainer: Hassan Shirani <hshirani@peer1.com>
+Maintainer: Hassan Shirani <hshirani@zenfactory.org>
 Architecture: all
-Depends: openssl (>= 0.9), coreutils (>= 6.10), curl (>= 7.18)
+Depends: postgresql-8.4 (>= 8.4), postgresql-client (>= 8.4), postgresql-client-common (>= 113+squeeze1), postgresql-common (>= 113+squeeze), vim (>= 2:7.2.445+hg~cb94c42c0e1a-1), vim-common (>= 2:7.2.445+hg~cb94c42c0e1a-1), vim-runtime (>= 2:7.2.445+hg~cb94c42c0e1a-1), vim-tiny (>= 2:7.2.445+hg~cb94c42c0e1a-1), openssh-server (>= 1:5.5p1-6+squeeze3), apache2 (>= 2.2.16), apache2-mpm-prefork (>= 2.2.16), apache2-utils (>= 2.2.16), apache2.2-bin (>= 2.2.16), apache2.2-common (>= 2.2.16), php5 (>= 5.3.3), php5-cli (>= 5.3.3), php5-common (>= 5.3.3), php5-curl (>= 5.3.3), php5-pgsql (>= 5.3.3), php5-suhosin (>= 0.9.32), xini t(>= 1.2.0), fluxbox (>= 1.1.1), iceweasel (>= 3.5), iceweasel-firebug (> =1.5), plymouth (>= 0.8.3), plymouth-dev (>= 0.8.3), plymouth-themes-all (>= 0.8.3), plymouth-themes-fade-in (>=0.8.3), plymouth-themes-glow (>= 0.8.3), plymouth-themes-script (>= 0.8.3), plymouth-themes-solar (>= 0.8.3), plymouth-themes-spinfinity (>= 0.8.3)
 Pre-Depends: debconf (>= 0.2.17) 
-Description: Peer1 Hosting Cloud Tools -- This package installs three utilities to enable an end user to upload, download, and list files in their personal cloud storage account at Peer1 Hosting.
+Description: The Veda Project Virtual Machine Template -- This package when installed will turn a clean debian install into a machine running the full Veda Project stack and a gui allowing users to access The Veda Project on non-networked machines. 
