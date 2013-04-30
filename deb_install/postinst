@@ -11,6 +11,7 @@ subtenant_id=$RET
 db_get vedaOffline/git_pass
 uid=$RET
 
+
 # Display complete message
 db_input critical vedaOffline/setup_complete
 db_go
@@ -18,3 +19,134 @@ db_go
 # Cleanly exit
 db_stop
 
+# Define Working Variables
+APP_GIT_ORIGIN='https://github.com/VivekVish/Veda-Project-App.git'
+API_GIT_ORIGIN='https://github.com/VivekVish/Veda-Project-API.git'
+#STACK_ARCHIVE_NAME='dist.tgz'
+WORKING_PATH='/opt/upgrade'
+#ARCHIVE_PATH='/root'
+
+# Make working directory
+mkdir $WORKING_PATH
+
+# Change to working directory
+cd $WORKING_PATH
+
+# Move Stack package to working directory
+#mv $ARCHIVE_PATH/$STACK_ARCHIVE_NAME $WORKING_PATH/
+
+# Unpack installation files
+#tar -zxvf $STACK_ARCHIVE_NAME
+
+# Update apt sources with local mirror config
+mv /etc/apt/sources.list /etc/apt/sources.list.orig
+mv sources.list /etc/apt/
+
+# Run updates
+apt-get update
+apt-get upgrade
+
+# Install prerequisite packages
+apt-get -y install postgresql-8.4 postgresql-client vim sudo openssh-server apache2 php5 php5-common php5-curl php5-pgsql xinit fluxbox iceweasel
+
+# Remove unecessary packages (specifically the MTA which takes forever to boot)
+apt-get -y autoremove exim4
+
+# Pull down repo's into working directory
+git clone $APP_GIT_ORIGIN vp_app
+git clone $API_GIT_ORIGIN vedaApi
+
+# Backup old postgres configs
+#mv /etc/postgresql/8.4/main/pg_hba.conf /etc/postgresql/8.4/main/pg_hba.conf.orig
+#mv /etc/postgresql/8.4/main/postgreql.conf /etc/postgresql/8.4/main/postgreql.conf.orig
+
+# Install new postgres configs
+#mv postgreql.conf /etc/postgresql/8.4/main/postgreql.conf
+#mv pg_hba.conf /etc/postgresql/8.4/main/pg_hba.conf
+
+# Restart postgres service
+#service postgresql restart
+
+# Add Veda hosts
+cat $WORKING_PATH/vp_app/config/offline/hosts >> /etc/hosts
+
+# Configure network interfaces
+#cp /etc/network/interfaces /etc/network/interfaces.orig
+#cp $WORKING_PATH/interfaces /etc/network/interfaces
+
+# Import database
+sudo -u postgres psql < vedacore.sql
+
+# Setup user accounts
+adduser veda 
+
+# Add admins to sudoers file
+echo "veda			ALL=(ALL) ALL" >> /etc/sudoers
+
+# Stop http service
+service apache2 stop
+
+# Backup old apache configs
+mv /etc/apache2 /etc/apache2.orig
+
+# Install new apache configs
+mv apache2 /etc/
+
+# Backup old web root
+mv /var/www /var/www.orig
+
+# Create new web root
+mkdir /var/www
+
+# Install API 
+mv vedaApi /var/www/
+
+# Install APP
+mv vp_app /var/www/
+
+# Set permissions
+chown -R www-data:www-data /var/www
+chmod -R u+rwx /var/www
+chmod -R go-rwx /var/www
+
+# Backup old inittab
+cp /etc/inittab /etc/inittab.orig
+mv inittab /etc/inittab
+
+# Copy window manager config files
+mv .fluxbox /home/veda/
+chown -R veda:veda /home/veda
+
+# Setup X Display
+echo "startfluxbox" > /home/veda/.xinitrc
+echo "startx" > /home/veda/.bash_profile
+
+# Cleanup
+rm -rf /opt/upgrade
+
+# Restart appliance (optionally restart individual services below)
+reboot
+
+# Backup original ip config
+#mv /etc/network/interfaces /etc/network/interfaces.orig
+
+# Install new ip config
+#mv interfaces /etc/network/interfaces
+
+# Backup old SSH config
+#mv /etc/ssh/sshd_config /etc/ssh/sshd_config.orig
+
+# Install new SSH config
+#mv sshd_config /etc/ssh/sshd_config
+
+# Bring down old db virtual to avoid ip conflict
+#ssh -p 2290 hshirani@$OLD_HOST sudo /sbin/ifconfig eth1 down
+
+# Restart networking
+#service networking restart
+
+# Restart SSH
+#service sshd restart
+
+# Restart Apache
+#service apache2 restart
